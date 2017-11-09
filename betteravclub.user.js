@@ -19,15 +19,17 @@ $(document).ready(function() {
     $("article.post-item-frontpage div.item__content.js_item-content").addClass("item__content--thumb");
     // hide the sidebar
     $("section.sidebar").remove();
+    // get rid of "shared from kinja roundup"
+    $("div.post-wrapper.streamshare").remove();
     // expand the content to replace the sidebar
     $("section.main").css("width", "100%");
     $("div.main__content").css("max-width", "inherit");
     $("div.post-content>*,article.post .align--bleed").css("max-width", "85%");
-    // get rid of the endless article scroll
-    $("div.reading-list").remove();
+    // get rid of autoplay videos
+    $(".instream-native-video").remove();
 
     // update comments when they appear
-    var observer = new MutationObserver(function(mutations) {
+    var commentObs = new MutationObserver(function() {
         // make comments the same width as content
         $("div.replies-wrapper, div.discussion-header, article.reply").css("max-width", "85%");
         // fix alignment
@@ -38,7 +40,7 @@ $(document).ready(function() {
         $(".discussion-region--truncated--default").css("height", "auto");
         // TODO: load replies using XHR?
     });
-    observer.observe(document.querySelector("section.discussion-region"), {
+    commentObs.observe(document.querySelector("section.discussion-region"), {
         subtree: true,
         childList: true,
         attributes: false,
@@ -46,5 +48,19 @@ $(document).ready(function() {
         attributeOldValue: false,
         characterDataOldValue: false
     });
+
+    // remove the infinite scroll items as they appear
+    // WIP
+    var readingListObs = new MutationObserver(function() {
+        $("div.js_reading-list-item").remove();
+        //window.history.back();
+    });
+    readingListObs.observe(document.querySelector("div.reading-list"), {
+        subtree: true,
+        childList: true,        
+    });
+    window.ScrollReadingListItem = null;
+    window.tiger.components.post.type.scrollListItem = null;
+
 }
 );
