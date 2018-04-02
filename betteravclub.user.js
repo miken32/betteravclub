@@ -18,63 +18,80 @@
 // ==/UserScript==
 
 $(document).ready(function() {
-    // make first article image same size as subsequent ones
-    $("article.post-item-frontpage div.item__content.js_item-content").addClass("item__content--thumb");
-
     // hide the sidebar
     $("section.sidebar").remove();
 
-    // get rid of "shared from kinja roundup"
-    $("body.avclub figure.commerce-image").closest("div.post-wrapper.streamshare").remove();
+    // hide the "network sites" list
+    $("ul.networknav__sitelist").remove();
+
+    // show the search bar
+    $("a.networknav__search-link").trigger("click");
 
     // expand the content to replace the sidebar
     $("section.main").css("width", "100%");
     $("div.main__content").css("max-width", "inherit");
     $("div.post-content>*,article.post .align--bleed").css("max-width", "85%");
 
-    // get rid of autoplay videos
-    var videoObs = new MutationObserver(function() {
-        $("recent-video__recirc").closest("postlist__item").remove();
-    });
-    videoObs.observe(document.querySelector("div.post-list--pe"), {
-        subtree: true,
-        childList: true
-    });
-
-  	// get rid of "more from"
-  	$(".row.load-more").children("div").not(".load-more__button").remove();
-
     // get rid of newsletter popups
     $(".js_newsletter-btn--subscribe").remove();
 
-    // update comments when they appear
-    var commentObs = new MutationObserver(function(mutList, mutObs) {
-        console.log(mutList.length);
-        // make comments the same width as content
-        $("div.replies-wrapper, div.discussion-header, article.reply").css("max-width", "85%");
-        // fix alignment
-        $("div.discussion-header").css("margin-left", 0);
-        // get rid of "show more comments" and blurry stuff
-        $("div.post-cutoff--replies").css("display", "none");
-        // show more comments
-        $(".discussion-region--truncated--default").css("height", "auto");
-        // TODO: load replies using XHR?
-    });
-    commentObs.observe(document.querySelector("section.discussion-region"), {
-        subtree: true,
-        childList: true
-    });
+		// the article list
+    if ($("div.post-list--pe").length) {
+		    // make first article image same size as subsequent ones
+    		$("article.post-item-frontpage div.item__content.js_item-content").addClass("item__content--thumb");
 
-    // remove the infinite scroll items as they appear (WIP)
-    var readingListObs = new MutationObserver(function() {
-        $("div.js_reading-list-item").remove();
-        //window.history.back();
-    });
-    readingListObs.observe(document.querySelector("div.reading-list"), {
-        subtree: true,
-        childList: true,        
-    });
-    window.ScrollReadingListItem = null;
-    window.tiger.components.post.type.scrollListItem = null;
+        // get rid of shared items from anywhere outside AV Club
+    		// only local stories seem to have links in the byline header
+		    $("div.streamshare div.meta--pe.secondary-byline").not(":has(a)").closest("div.post-wrapper.streamshare").remove();
+  
+    		// get rid of "kinja deals"
+		    $("body.avclub figure.commerce-image").closest("div.post-wrapper.streamshare").remove();
+
+		  	// get rid of "more from"
+  			$(".row.load-more").children("div").not(".load-more__button").remove();
+
+      	// get rid of autoplay videos
+		    var videoObs = new MutationObserver(function() {
+    		    $("div.recent-video").closest("div.postlist__item").remove();
+		    });
+    		videoObs.observe(document.querySelector("div.post-list--pe"), {
+        		subtree: true,
+            childList: true
+		    });
+    }
+
+    // an article
+    if ($("div.post-content").length) {
+		    // get rid of autoplay videos in article bodies
+		    var videoObs2 = new MutationObserver(function() {
+    		    $("div.recent-video").closest("div.instream-native-video").remove();
+		    });
+    		videoObs2.observe(document.querySelector("div.post-content"), {
+        		subtree: true,
+        		childList: true
+		    });
+		    $("div.post-content div.instream-native-video").remove();
+
+        // remove the infinite scroll items before they appear
+        $("div.js_reading-list").remove();
+        // XXX TODO: keep location bar value the same
+
+        // update comments when they appear
+        var commentObs = new MutationObserver(function(mutList, mutObs) {
+            // make comments the same width as content
+            $("div.replies-wrapper, div.discussion-header, article.reply").css("max-width", "85%");
+            // fix alignment
+            $("div.discussion-header").css("margin-left", 0);
+            // get rid of "show more comments" and blurry stuff
+            $("div.post-cutoff--replies").css("display", "none");
+            // show more comments
+            $(".discussion-region--truncated--default").css("height", "auto");
+            // TODO: load replies using XHR?
+        });
+        commentObs.observe(document.querySelector("section.discussion-region"), {
+            subtree: true,
+            childList: true
+        });
+    }
 }
 );
