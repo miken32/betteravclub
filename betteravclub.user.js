@@ -35,42 +35,42 @@ $(document).ready(function() {
     // get rid of newsletter popups
     $(".js_newsletter-btn--subscribe").remove();
 
-		// the article list
+    // the article list
     if ($("div.post-list--pe").length) {
-		    // make first article image same size as subsequent ones
-    		$("article.post-item-frontpage div.item__content.js_item-content").addClass("item__content--thumb");
+        // make first article image same size as subsequent ones
+        $("article.post-item-frontpage div.item__content.js_item-content").addClass("item__content--thumb");
 
         // get rid of shared items from anywhere outside AV Club
-    		// only local stories seem to have links in the byline header
-		    $("div.streamshare div.meta--pe.secondary-byline").not(":has(a)").closest("div.post-wrapper.streamshare").remove();
+        // only local stories seem to have links in the byline header
+        $("div.streamshare div.meta--pe.secondary-byline").not(":has(a)").closest("div.post-wrapper.streamshare").remove();
   
-    		// get rid of "kinja deals"
-		    $("body.avclub figure.commerce-image").closest("div.post-wrapper.streamshare").remove();
+        // get rid of "kinja deals"
+        $("body.avclub figure.commerce-image").closest("div.post-wrapper.streamshare").remove();
 
-		  	// get rid of "more from"
-  			$(".row.load-more").children("div").not(".load-more__button").remove();
+        // get rid of "more from"
+        $(".row.load-more").children("div").not(".load-more__button").remove();
 
-      	// get rid of autoplay videos
-		    var videoObs = new MutationObserver(function() {
-    		    $("div.recent-video").closest("div.postlist__item").remove();
-		    });
-    		videoObs.observe(document.querySelector("div.post-list--pe"), {
-        		subtree: true,
+        // get rid of autoplay videos
+        var videoObs = new MutationObserver(function() {
+            $("div.recent-video").closest("div.postlist__item").remove();
+        });
+        videoObs.observe(document.querySelector("div.post-list--pe"), {
+            subtree: true,
             childList: true
-		    });
+        });
     }
 
     // an article
     if ($("div.post-content").length) {
-		    // get rid of autoplay videos in article bodies
-		    var videoObs2 = new MutationObserver(function() {
-    		    $("div.recent-video").closest("div.instream-native-video").remove();
-		    });
-    		videoObs2.observe(document.querySelector("div.post-content"), {
-        		subtree: true,
-        		childList: true
-		    });
-		    $("div.post-content div.instream-native-video").remove();
+        // get rid of autoplay videos in article bodies
+        var videoObs2 = new MutationObserver(function() {
+            $("div.recent-video").closest("div.instream-native-video").remove();
+        });
+        videoObs2.observe(document.querySelector("div.post-content"), {
+            subtree: true,
+            childList: true
+        });
+        $("div.post-content div.instream-native-video").remove();
 
         // remove the infinite scroll items before they appear
         $("div.js_reading-list").remove();
