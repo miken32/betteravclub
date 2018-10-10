@@ -7,11 +7,9 @@
 // @description   Tries to make The AV Club tolerable
 // @author        Michael Newton
 // @homepageURL   https://the-avocado.org/
-// @match         http://avclub.com/*
 // @match         https://avclub.com/*
-// @match         http://*.avclub.com/*
 // @match         https://*.avclub.com/*
-// @match         http://*.kinja.com/*
+// @match         https://*.kinja.com/*
 // @run-at        document-start
 // @grant         none
 // @require       https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js
@@ -34,6 +32,22 @@ $(document).ready(function() {
 
     // get rid of newsletter popups
     $(".js_newsletter-btn--subscribe").remove();
+
+    // stop hiding twitter embeds
+    var frame = $(".twitter-embed > iframe");
+    frame.on("load", function() {
+        var frameDocument = $("html", this.contentWindow.document);
+        var innerFrame = $("iframe", frameDocument);
+        // can't attach a listener to the load event of the nested iframe
+        // put in a small delay instead and hope it loads (otherwise height is 'auto')
+        window.setTimeout(function() {
+            var win = innerFrame.get(0).contentWindow;
+            var html = win.document.getElementsByTagName("html")[0];
+            var ht = win.getComputedStyle(html).getPropertyValue("height");
+            frame.css("height", ht);
+        }, 1000);
+    });
+
 
     // the article list
     if ($("div.post-list--pe").length) {
@@ -74,7 +88,8 @@ $(document).ready(function() {
 
         // remove the infinite scroll items before they appear
         $("div.js_reading-list").remove();
-        // XXX TODO: keep location bar value the same
+
+        $(".discussion-region--truncated--staff").css("height", "auto");
 
         // update comments when they appear
         var commentObs = new MutationObserver(function(mutList, mutObs) {
